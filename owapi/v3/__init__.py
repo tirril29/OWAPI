@@ -11,6 +11,9 @@ from owapi.blizz_interface import fetch_all_user_pages
 from owapi.v3.v3_util import with_ratelimit
 from owapi.v3 import parsing
 
+from owapi.heroes import HEROES
+from owapi.heroes import HERO
+
 api_v3 = Blueprint("api_v3", url_prefix="/v3", reverse_hooks=True)
 
 
@@ -220,6 +223,23 @@ async def get_achievements(ctx: HTTPRequestContext, battletag: str):
         built_dict[region] = d
 
     return built_dict
+
+@api_v3.route("/heroes")
+async def get_heroes(ctx: HTTPRequestContext):
+    """
+    Send hero list. 
+    """
+    return HEROES
+
+@api_v3.route("/heroes/(.*)")
+async def get_hero(ctx: HTTPRequestContext, hero: str):
+    """
+    Send hero data for selected hero. 
+    """
+    if hero in HERO:
+        return {hero: HERO[hero]}
+    else:
+        return {"msg": "hero not found", "error": 404}
 
 
 get_achievements.should_convert = False
